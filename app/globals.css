@@ -1,0 +1,50 @@
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;500;600;700;800;900&display=swap");
+@import "tailwindcss";
+
+/* Фірмові кольори */
+:root {
+  --color-yellow: #f8c300;
+  --color-black: #1a1a1a;
+  --color-red: #dc1f26;
+  --color-white: #ffffff;
+  --color-cream: #fff8e7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Manrope", sans-serif;
+  color: var(--color-black);
+}
+
+/* Клас для екрану-плеєра — режим kiosk */
+.display-screen {
+  cursor: none !important;
+  overflow: hidden !important;
+  width: 1920px;
+  height: 1080px;
+  background: var(--color-cream);
+}
+
+/* Fade-перехід між слайдами */
+.slide-fade-enter {
+  opacity: 0;
+}
+.slide-fade-enter-active {
+  opacity: 1;
+  transition: opacity var(--fade-duration, 500ms) ease-in-out;
+}
+.slide-fade-exit {
+  opacity: 1;
+}
+.slide-fade-exit-active {
+  opacity: 0;
+  transition: opacity var(--fade-duration, 500ms) ease-in-out;
+}
+
+/* Шрифт для великих заголовків на слайдах */
+.font-display {
+  font-family: "Bebas Neue", sans-serif;
+}

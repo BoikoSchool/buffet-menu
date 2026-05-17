@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  order     Int
+  dishes    Dish[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Dish {
+  id            String   @id @default(cuid())
+  name          String
+  price         Float
+  categoryId    String
+  category      Category @relation(fields: [categoryId], references: [id])
+  photoUrl      String?
+  isTopPosition Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  order         Int
+  topOrder      Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Settings {
+  id                    String   @id @default(cuid())
+  categorySlideDuration Int      @default(10)
+  topSlideDuration      Int      @default(7)
+  fadeDuration          Int      @default(500)
+  itemsPerCategorySlide Int      @default(8)
+  updatedAt             DateTime @updatedAt
+}
+
+model User {
+  id           String @id @default(cuid())
+  username     String @unique
+  passwordHash String
+}
