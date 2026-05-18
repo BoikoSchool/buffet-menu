@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 
 const updateSchema = z.object({
   name: z.string().min(1, "Назва не може бути порожньою").max(100, "Назва занадто довга"),
+  slideGroup: z.number().int().min(1).max(20).optional(),
+  columnPosition: z.enum(["FULL", "LEFT", "RIGHT"]).optional(),
 });
 
 export async function PUT(
@@ -19,9 +21,14 @@ export async function PUT(
       return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
     }
 
+    const { name, slideGroup, columnPosition } = result.data;
     const category = await prisma.category.update({
       where: { id },
-      data: { name: result.data.name },
+      data: {
+        name,
+        ...(slideGroup !== undefined && { slideGroup }),
+        ...(columnPosition !== undefined && { columnPosition }),
+      },
     });
 
     return NextResponse.json(category);
@@ -31,13 +38,12 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
 
-    // Перевіряємо наявність страв у категорії
     const dishCount = await prisma.dish.count({ where: { categoryId: id } });
     if (dishCount > 0) {
       return NextResponse.json(

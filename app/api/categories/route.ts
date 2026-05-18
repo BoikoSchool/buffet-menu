@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 
 const createCategorySchema = z.object({
   name: z.string().min(1, "Назва не може бути порожньою").max(100, "Назва занадто довга"),
+  slideGroup: z.number().int().min(1).max(20).optional().default(1),
+  columnPosition: z.enum(["FULL", "LEFT", "RIGHT"]).optional().default("FULL"),
 });
 
 export async function GET() {
@@ -33,7 +35,12 @@ export async function POST(request: NextRequest) {
     const order = (lastCategory?.order ?? 0) + 1;
 
     const category = await prisma.category.create({
-      data: { name: result.data.name, order },
+      data: {
+        name: result.data.name,
+        order,
+        slideGroup: result.data.slideGroup,
+        columnPosition: result.data.columnPosition,
+      },
     });
 
     return NextResponse.json(category, { status: 201 });

@@ -41,10 +41,10 @@ async function main() {
 
   // Категорії
   const categories = await Promise.all([
-    prisma.category.create({ data: { name: "Гарячі страви", order: 1 } }),
-    prisma.category.create({ data: { name: "Випічка", order: 2 } }),
-    prisma.category.create({ data: { name: "Десерти", order: 3 } }),
-    prisma.category.create({ data: { name: "Напої", order: 4 } }),
+    prisma.category.create({ data: { name: "Гарячі страви", order: 1, slideGroup: 1, columnPosition: "FULL" } }),
+    prisma.category.create({ data: { name: "Випічка", order: 2, slideGroup: 2, columnPosition: "LEFT" } }),
+    prisma.category.create({ data: { name: "Десерти", order: 3, slideGroup: 2, columnPosition: "RIGHT" } }),
+    prisma.category.create({ data: { name: "Напої", order: 4, slideGroup: 3, columnPosition: "FULL" } }),
   ]);
 
   const [hotDishes, bakery, desserts, drinks] = categories;

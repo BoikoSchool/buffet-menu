@@ -8,12 +8,22 @@ import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { SortableList } from "@/components/admin/SortableList";
 import { useToast } from "@/components/admin/Toast";
 
+type ColumnPosition = "FULL" | "LEFT" | "RIGHT";
+
 interface Category {
   id: string;
   name: string;
   order: number;
+  slideGroup: number;
+  columnPosition: ColumnPosition;
   _count: { dishes: number };
 }
+
+const COLUMN_LABELS: Record<ColumnPosition, string> = {
+  FULL: "Повна ширина",
+  LEFT: "Ліва колонка",
+  RIGHT: "Права колонка",
+};
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -21,6 +31,8 @@ export default function CategoriesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editCategory, setEditCategory] = useState<Category | null>(null);
   const [formName, setFormName] = useState("");
+  const [formSlideGroup, setFormSlideGroup] = useState(1);
+  const [formColumnPosition, setFormColumnPosition] = useState<ColumnPosition>("FULL");
   const [formError, setFormError] = useState("");
   const [saving, setSaving] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
@@ -44,6 +56,8 @@ export default function CategoriesPage() {
   function openAdd() {
     setEditCategory(null);
     setFormName("");
+    setFormSlideGroup(1);
+    setFormColumnPosition("FULL");
     setFormError("");
     setModalOpen(true);
   }
@@ -51,6 +65,8 @@ export default function CategoriesPage() {
   function openEdit(cat: Category) {
     setEditCategory(cat);
     setFormName(cat.name);
+    setFormSlideGroup(cat.slideGroup);
+    setFormColumnPosition(cat.columnPosition);
     setFormError("");
     setModalOpen(true);
   }
@@ -64,7 +80,11 @@ export default function CategoriesPage() {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: formName.trim() }),
+        body: JSON.stringify({
+          name: formName.trim(),
+          slideGroup: formSlideGroup,
+          columnPosition: formColumnPosition,
+        }),
       });
       const data = await res.json();
       if (!res.ok) { showToast(data.error, "error"); return; }
@@ -118,11 +138,11 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="p-6 max-w-2xl">
+    <div className="p-6 max-w-3xl">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">Категорії</h1>
-          <p className="text-sm text-gray-500 mt-1">Перетягуйте для зміни порядку</p>
+          <p className="text-sm text-gray-500 mt-1">Перетягуйте для зміни порядку відображення</p>
         </div>
         <Button onClick={openAdd}>+ Додати категорію</Button>
       </div>
@@ -140,7 +160,11 @@ export default function CategoriesPage() {
             <div className="flex items-center gap-4 pl-10 pr-4 py-3 bg-white rounded-lg border border-gray-200 shadow-sm">
               <div className="flex-1">
                 <p className="font-medium text-[#1A1A1A]">{cat.name}</p>
-                <p className="text-xs text-gray-400">{cat._count.dishes} страв</p>
+                <p className="text-xs text-gray-400">
+                  {cat._count.dishes} страв&nbsp;·&nbsp;
+                  Слайд&nbsp;{cat.slideGroup}&nbsp;·&nbsp;
+                  {COLUMN_LABELS[cat.columnPosition]}
+                </p>
               </div>
               <div className="flex gap-2">
                 <button
@@ -181,14 +205,50 @@ export default function CategoriesPage() {
           </>
         }
       >
-        <Input
-          label="Назва категорії"
-          value={formName}
-          onChange={(e) => { setFormName(e.target.value); setFormError(""); }}
-          error={formError}
-          placeholder="Наприклад: Гарячі страви"
-          autoFocus
-        />
+        <div className="flex flex-col gap-4">
+          <Input
+            label="Назва категорії"
+            value={formName}
+            onChange={(e) => { setFormName(e.target.value); setFormError(""); }}
+            error={formError}
+            placeholder="Наприклад: Гарячі страви"
+            autoFocus
+          />
+
+          {/* Номер слайду */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Номер слайду (група)
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={20}
+              value={formSlideGroup}
+              onChange={(e) => setFormSlideGroup(Math.max(1, Math.min(20, parseInt(e.target.value) || 1)))}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A1A1A]"
+            />
+            <p className="text-xs text-gray-400 mt-1">
+              Категорії з однаковим номером показуються на одному слайді (ліва + права колонки)
+            </p>
+          </div>
+
+          {/* Позиція колонки */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Розташування на слайді
+            </label>
+            <select
+              value={formColumnPosition}
+              onChange={(e) => setFormColumnPosition(e.target.value as ColumnPosition)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A1A1A]"
+            >
+              <option value="FULL">Повна ширина — одна категорія, страви в двох колонках</option>
+              <option value="LEFT">Ліва колонка — поруч з іншою категорією</option>
+              <option value="RIGHT">Права колонка — поруч з іншою категорією</option>
+            </select>
+          </div>
+        </div>
       </Modal>
 
       {/* Confirm видалення */}

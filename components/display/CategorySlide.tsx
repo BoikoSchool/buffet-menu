@@ -1,6 +1,5 @@
-// Слайд категорії — стиль кав'ярні «Клава»: таблиця назва↔ціна, жовтий/кремовий фон
-
 import Image from "next/image";
+import type { SlideGroup } from "@/types";
 
 interface Dish {
   id: string;
@@ -9,162 +8,276 @@ interface Dish {
   photoUrl: string | null;
 }
 
-interface CategorySlideProps {
-  categoryName: string;
-  dishes: Dish[];
-  // Якщо категорія розбита на кілька слайдів
-  partIndex?: number;
-  totalParts?: number;
+function CategoryHeader({ name }: { name: string }) {
+  return (
+    <div
+      style={{
+        height: "14vh",
+        flexShrink: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
+      <span
+        style={{
+          color: "#F8C300",
+          fontSize: "2.2vw",
+          fontWeight: 900,
+          letterSpacing: "0.22em",
+          textTransform: "uppercase",
+          textAlign: "center",
+        }}
+      >
+        &#9670;&nbsp;&nbsp;{name.toUpperCase()}&nbsp;&nbsp;&#9670;
+      </span>
+      <div
+        style={{
+          width: "70%",
+          height: "1px",
+          background: "#F8C300",
+          marginTop: "1vh",
+          opacity: 0.35,
+        }}
+      />
+    </div>
+  );
 }
 
-export function CategorySlide({
-  categoryName,
+function DishRow({ dish }: { dish: Dish }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-end",
+        paddingBottom: "1.4vh",
+        marginBottom: "0.2vh",
+      }}
+    >
+      <span
+        style={{
+          color: "#FFFFFF",
+          fontSize: "1.6vw",
+          fontWeight: 400,
+          flexShrink: 1,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          lineHeight: 1.25,
+        }}
+      >
+        {dish.name}
+      </span>
+      <span
+        style={{
+          flex: 1,
+          minWidth: "1vw",
+          borderBottom: "2px dotted #444",
+          marginLeft: "0.6vw",
+          marginRight: "0.6vw",
+          marginBottom: "0.35vw",
+        }}
+      />
+      <span
+        style={{
+          color: "#F8C300",
+          fontSize: "1.6vw",
+          fontWeight: 700,
+          flexShrink: 0,
+          whiteSpace: "nowrap",
+          lineHeight: 1.25,
+        }}
+      >
+        {dish.price}&nbsp;&#8372;
+      </span>
+    </div>
+  );
+}
+
+function DishList({
   dishes,
-  partIndex,
-  totalParts,
-}: CategorySlideProps) {
-  const showPartLabel = totalParts && totalParts > 1 && partIndex !== undefined;
-  const heading = showPartLabel
-    ? `${categoryName} (${partIndex! + 1}/${totalParts})`
-    : categoryName;
+  paddingLeft,
+  paddingRight,
+  borderRight,
+}: {
+  dishes: Dish[];
+  paddingLeft?: string;
+  paddingRight?: string;
+  borderRight?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        flex: 1,
+        paddingLeft: paddingLeft ?? "3vw",
+        paddingRight: paddingRight ?? "3vw",
+        paddingTop: "1.5vh",
+        paddingBottom: "1.5vh",
+        borderRight: borderRight ? "1px solid #2A2A2A" : undefined,
+        overflow: "hidden",
+      }}
+    >
+      {dishes.map((dish) => (
+        <DishRow key={dish.id} dish={dish} />
+      ))}
+    </div>
+  );
+}
+
+interface CategorySlideProps {
+  group: SlideGroup;
+}
+
+export function CategorySlide({ group }: CategorySlideProps) {
+  const isFull =
+    group.columns.length === 1 && group.columns[0].position === "FULL";
+  const leftCol = group.columns.find((c) => c.position === "LEFT");
+  const rightCol = group.columns.find((c) => c.position === "RIGHT");
 
   return (
     <div
       style={{
-        width: 1920,
-        height: 1080,
-        background: "#FFF8E7",
+        width: "100vw",
+        height: "100vh",
+        background: "#1A1A1A",
         display: "flex",
         flexDirection: "column",
+        overflow: "hidden",
       }}
     >
-      {/* Шапка */}
+      {/* Шапка — 8vh */}
       <div
         style={{
-          background: "#1A1A1A",
-          height: 108,
+          height: "8vh",
+          flexShrink: 0,
           display: "flex",
           alignItems: "center",
-          padding: "0 60px",
-          gap: 32,
-          flexShrink: 0,
+          paddingLeft: "3vw",
+          paddingRight: "3vw",
+          borderBottom: "1px solid #282828",
         }}
       >
-        {/* Логотип школи */}
-        <div style={{ width: 80, height: 80, flexShrink: 0 }}>
+        <div
+          style={{
+            width: "5.5vh",
+            height: "5.5vh",
+            flexShrink: 0,
+            position: "relative",
+          }}
+        >
           <Image
             src="/logo.png"
             alt="Private Boiko School"
-            width={80}
-            height={80}
-            style={{ objectFit: "contain", width: 80, height: 80 }}
+            fill
+            style={{ objectFit: "contain" }}
             priority
           />
         </div>
-
-        <div style={{ flex: 1 }}>
+        <div style={{ marginLeft: "1.4vw" }}>
           <p
-            className="font-display"
-            style={{ color: "#FFFFFF", fontSize: 28, letterSpacing: "0.15em", textTransform: "uppercase" }}
+            style={{
+              color: "#FFFFFF",
+              fontSize: "1.3vw",
+              fontWeight: 700,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              lineHeight: 1.2,
+            }}
           >
             Private Boiko School
           </p>
           <p
-            style={{ color: "#F8C300", fontSize: 16, letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 2 }}
+            style={{
+              color: "#F8C300",
+              fontSize: "0.75vw",
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              lineHeight: 1.3,
+            }}
           >
             Меню буфету
           </p>
         </div>
       </div>
 
-      {/* Основна область */}
-      <div
-        style={{
-          flex: 1,
-          padding: "40px 80px",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        {/* Заголовок категорії у рамці */}
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: 32,
-            padding: "12px 0",
-            borderTop: "3px solid #1A1A1A",
-            borderBottom: "3px solid #1A1A1A",
-          }}
-        >
-          <h2
-            className="font-display"
+      {/* Основний вміст — 92vh */}
+      {isFull ? (
+        // FULL: один заголовок — страви в двох колонках
+        <>
+          <CategoryHeader name={group.columns[0].category.name} />
+          <div
             style={{
-              fontSize: 56,
-              color: "#1A1A1A",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
+              display: "flex",
+              flex: 1,
+              overflow: "hidden",
             }}
           >
-            {heading}
-          </h2>
-        </div>
-
-        {/* Список страв */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 0 }}>
-          {dishes.map((dish, idx) => (
+            {(() => {
+              const dishes = group.columns[0].category.dishes;
+              const half = Math.ceil(dishes.length / 2);
+              return (
+                <>
+                  <DishList
+                    dishes={dishes.slice(0, half)}
+                    paddingLeft="4vw"
+                    paddingRight="3vw"
+                    borderRight
+                  />
+                  <DishList
+                    dishes={dishes.slice(half)}
+                    paddingLeft="3vw"
+                    paddingRight="4vw"
+                  />
+                </>
+              );
+            })()}
+          </div>
+        </>
+      ) : (
+        // PAIR: дві категорії — кожна у своїй колонці
+        <div
+          style={{
+            display: "flex",
+            flex: 1,
+            overflow: "hidden",
+          }}
+        >
+          {leftCol && (
             <div
-              key={dish.id}
               style={{
+                width: "50%",
                 display: "flex",
-                alignItems: "center",
-                gap: 24,
-                padding: "16px 0",
-                borderBottom: idx < dishes.length - 1 ? "1px solid #E0D8C0" : "none",
+                flexDirection: "column",
+                borderRight: "1px solid #2A2A2A",
               }}
             >
-              {/* Зарезервоване місце під фото 100×100 */}
-              <div style={{ width: 100, height: 100, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {dish.photoUrl && (
-                  <Image
-                    src={dish.photoUrl}
-                    alt={dish.name}
-                    width={100}
-                    height={100}
-                    style={{ objectFit: "contain", mixBlendMode: "multiply" }}
-                  />
-                )}
-              </div>
-
-              {/* Назва (розтягується) */}
-              <span
-                style={{
-                  flex: 1,
-                  fontSize: 44,
-                  fontWeight: 600,
-                  color: "#1A1A1A",
-                  lineHeight: 1.2,
-                }}
-              >
-                {dish.name}
-              </span>
-
-              {/* Ціна */}
-              <span
-                style={{
-                  fontSize: 48,
-                  fontWeight: 900,
-                  color: "#1A1A1A",
-                  minWidth: 180,
-                  textAlign: "right",
-                  flexShrink: 0,
-                }}
-              >
-                {dish.price} ₴
-              </span>
+              <CategoryHeader name={leftCol.category.name} />
+              <DishList
+                dishes={leftCol.category.dishes}
+                paddingLeft="4vw"
+                paddingRight="3vw"
+              />
             </div>
-          ))}
+          )}
+          {rightCol && (
+            <div
+              style={{
+                width: "50%",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <CategoryHeader name={rightCol.category.name} />
+              <DishList
+                dishes={rightCol.category.dishes}
+                paddingLeft="3vw"
+                paddingRight="4vw"
+              />
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

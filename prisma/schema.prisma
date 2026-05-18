@@ -7,13 +7,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ColumnPosition {
+  LEFT
+  RIGHT
+  FULL
+}
+
 model Category {
-  id        String   @id @default(cuid())
-  name      String
-  order     Int
-  dishes    Dish[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String         @id @default(cuid())
+  name           String
+  order          Int
+  slideGroup     Int            @default(1)
+  columnPosition ColumnPosition @default(FULL)
+  dishes         Dish[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 }
 
 model Dish {

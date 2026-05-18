@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import type { SlideGroup } from "@/types";
 
 // Публічний endpoint для екрану-плеєра
 export async function GET() {
@@ -23,14 +24,31 @@ export async function GET() {
       prisma.settings.findFirst(),
     ]);
 
-    // Фільтруємо категорії без активних страв
-    const activeCategories = categories
-      .filter((cat) => cat.dishes.length > 0)
-      .map((cat) => ({
-        id: cat.id,
-        name: cat.name,
-        dishes: cat.dishes,
-      }));
+    // Групуємо категорії по slideGroup
+    const groupMap = new Map<number, typeof categories>();
+    for (const cat of categories) {
+      if (cat.dishes.length === 0) continue;
+      const key = cat.slideGroup;
+      if (!groupMap.has(key)) groupMap.set(key, []);
+      groupMap.get(key)!.push(cat);
+    }
+
+    const slideGroups: SlideGroup[] = [];
+    const sortedKeys = [...groupMap.keys()].sort((a, b) => a - b);
+    for (const key of sortedKeys) {
+      const cats = groupMap.get(key)!;
+      slideGroups.push({
+        groupId: key,
+        columns: cats.map((cat) => ({
+          position: cat.columnPosition as "LEFT" | "RIGHT" | "FULL",
+          category: {
+            id: cat.id,
+            name: cat.name,
+            dishes: cat.dishes,
+          },
+        })),
+      });
+    }
 
     const settingsData = settings ?? {
       categorySlideDuration: 10,
@@ -41,7 +59,7 @@ export async function GET() {
 
     return NextResponse.json(
       {
-        categories: activeCategories,
+        slideGroups,
         topPositions,
         settings: {
           categorySlideDuration: settingsData.categorySlideDuration,
