@@ -51,20 +51,18 @@ function DishRow({ dish }: { dish: Dish }) {
       style={{
         display: "flex",
         alignItems: "flex-end",
-        paddingBottom: "1.4vh",
+        paddingBottom: "1.9vh",
         marginBottom: "0.2vh",
       }}
     >
       <span
         style={{
           color: "#FFFFFF",
-          fontSize: "1.6vw",
+          fontSize: "2.2vw",
           fontWeight: 400,
           flexShrink: 1,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          lineHeight: 1.25,
+          lineHeight: 1.2,
+          wordBreak: "break-word",
         }}
       >
         {dish.name}
@@ -72,21 +70,21 @@ function DishRow({ dish }: { dish: Dish }) {
       <span
         style={{
           flex: 1,
-          minWidth: "1vw",
+          minWidth: "1.5vw",
           borderBottom: "2px dotted #444",
-          marginLeft: "0.6vw",
-          marginRight: "0.6vw",
-          marginBottom: "0.35vw",
+          marginLeft: "0.7vw",
+          marginRight: "0.7vw",
+          marginBottom: "0.45vw",
         }}
       />
       <span
         style={{
           color: "#F8C300",
-          fontSize: "1.6vw",
+          fontSize: "2.2vw",
           fontWeight: 700,
           flexShrink: 0,
           whiteSpace: "nowrap",
-          lineHeight: 1.25,
+          lineHeight: 1.2,
         }}
       >
         {dish.price}&nbsp;&#8372;
