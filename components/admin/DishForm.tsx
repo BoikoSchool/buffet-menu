@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Toggle } from "@/components/ui/Toggle";
@@ -46,11 +46,14 @@ export function DishForm({ open, onClose, onSaved, categories, initialData }: Di
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
 
-  // Синхронізуємо форму при відкритті з новими initialData
-  useState(() => {
-    setForm(initialData ?? EMPTY_FORM);
-    setErrors({});
-  });
+  // Синхронізуємо форму щоразу при відкритті модалки
+  useEffect(() => {
+    if (open) {
+      setForm(initialData ?? EMPTY_FORM);
+      setErrors({});
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   function validate(): boolean {
     const newErrors: typeof errors = {};
@@ -62,7 +65,7 @@ export function DishForm({ open, onClose, onSaved, categories, initialData }: Di
     return Object.keys(newErrors).length === 0;
   }
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
     if (!validate()) return;
 
