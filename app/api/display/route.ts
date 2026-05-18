@@ -57,6 +57,18 @@ export async function GET() {
       itemsPerCategorySlide: 8,
     };
 
+    console.log(
+      "[/api/display] slideGroups:",
+      JSON.stringify(
+        slideGroups.map((g) => ({
+          groupId: g.groupId,
+          columns: g.columns.map((c) => ({ position: c.position, category: c.category.name, dishes: c.category.dishes.length })),
+        })),
+        null,
+        2
+      )
+    );
+
     return NextResponse.json(
       {
         slideGroups,

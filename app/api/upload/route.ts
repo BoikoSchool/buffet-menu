@@ -5,7 +5,7 @@ import { randomUUID } from "crypto";
 import { processImage } from "@/lib/image-processing";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 МБ
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,21 +33,37 @@ export async function POST(request: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Обробляємо зображення: зменшуємо і видаляємо чорний фон
+    // Обробляємо зображення ПЕРЕД завантаженням: ресайз + видалення чорного фону
     const processedBuffer = await processImage(buffer);
 
-    // Зберігаємо у /public/uploads/
-    const uploadsDir = join(process.cwd(), "public", "uploads");
-    await mkdir(uploadsDir, { recursive: true });
+    const filename = `dishes/${randomUUID()}.png`;
 
-    const filename = `${randomUUID()}.png`;
-    const filepath = join(uploadsDir, filename);
-    await writeFile(filepath, processedBuffer);
-
-    const url = `/uploads/${filename}`;
-    return NextResponse.json({ url });
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      // --- Production: Vercel Blob ---
+      const { put } = await import("@vercel/blob");
+      const blob = await put(filename, processedBuffer, {
+        access: "public",
+        contentType: "image/png",
+      });
+      return NextResponse.json({ url: blob.url });
+    } else {
+      // --- Локальна розробка: файлова система ---
+      const uploadsDir = join(process.cwd(), "public", "uploads");
+      await mkdir(uploadsDir, { recursive: true });
+      const localFilename = `${randomUUID()}.png`;
+      const filepath = join(uploadsDir, localFilename);
+      await writeFile(filepath, processedBuffer);
+      return NextResponse.json({ url: `/uploads/${localFilename}` });
+    }
   } catch (error) {
     console.error("Помилка завантаження файлу:", error);
-    return NextResponse.json({ error: "Помилка завантаження файлу" }, { status: 500 });
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json(
+      {
+        error: "Помилка завантаження файлу",
+        ...(process.env.NODE_ENV !== "production" && { details: message }),
+      },
+      { status: 500 }
+    );
   }
 }

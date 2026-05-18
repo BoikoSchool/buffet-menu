@@ -2,7 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [],
+    remotePatterns: [
+      {
+        // Vercel Blob CDN
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+        pathname: "/**",
+      },
+    ],
     localPatterns: [
       { pathname: "/uploads/**" },
       { pathname: "/logo.png" },
@@ -12,3 +19,6 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+
+
