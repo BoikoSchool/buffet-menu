@@ -168,6 +168,8 @@ export function TopPositionSlide({ dishes }: TopPositionSlideProps) {
         overflow: "hidden",
         display: "flex",
         alignItems: "stretch",
+        marginLeft: "auto",
+        marginRight: "auto",
       }}
     >
       {dishes.map((dish) => (
