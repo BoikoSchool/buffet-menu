@@ -15,67 +15,19 @@ interface TopPositionSlideProps {
   dishes: TopDish[]; // від 1 до 3 страв
 }
 
-// L-куточок у кутку картки
-// Товщина: 0.8vw (~15px), Довжина: 5vw (~96px)
-function LCorner({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
-  const isTop = position[0] === "t";
-  const isLeft = position[1] === "l";
-
-  const edge: React.CSSProperties = {
-    position: "absolute",
-    pointerEvents: "none",
-  };
-
-  if (isTop) { edge.top = 0; } else { edge.bottom = 0; }
-  if (isLeft) { edge.left = 0; } else { edge.right = 0; }
-
-  return (
-    <div style={{ ...edge, width: "5vw", height: "5vw" }}>
-      {/* Горизонтальна смуга */}
-      <div
-        style={{
-          position: "absolute",
-          top: isTop ? 0 : undefined,
-          bottom: !isTop ? 0 : undefined,
-          left: isLeft ? 0 : undefined,
-          right: !isLeft ? 0 : undefined,
-          width: "5vw",
-          height: "0.8vw",
-          background: "#1A1A1A",
-        }}
-      />
-      {/* Вертикальна смуга */}
-      <div
-        style={{
-          position: "absolute",
-          top: isTop ? 0 : undefined,
-          bottom: !isTop ? 0 : undefined,
-          left: isLeft ? 0 : undefined,
-          right: !isLeft ? 0 : undefined,
-          width: "0.8vw",
-          height: "5vw",
-          background: "#1A1A1A",
-        }}
-      />
-    </div>
-  );
-}
-
 // Картка однієї топ-позиції
 // Ширина: 29vw (~557px), Висота: 88vh (~950px)
 //
 // Розбиття висоти (% від висоти картки):
-//   5%  — верхній відступ
-//  43%  — зона фото
-//   3%  — відступ
-//  16%  — назва (2 рядки)
-//   4%  — відступ
-//  23%  — діаметр червоного кола
-//   6%  — нижній відступ
+//   3%  — верхній відступ
+//  52%  — зона фото (максимальний герой)
+//   3%  — відступ фото→назва
+//  13%  — назва (1-2 рядки)
+//   3%  — відступ назва→коло
+//  23%  — діаметр червоного кола (11.4vw ≈ 219px = 23% від 88vh)
+//   3%  — нижній відступ
 // = 100%
 function TopCard({ dish }: { dish: TopDish }) {
-  // Діаметр кола: 23% * 88vh = 20.24vh = 218px = 11.4vw (на 16:9)
-  // Використовуємо vw щоб і width і height були однаковою одиницею → ідеальне коло
   const circleDiam = "11.4vw";
 
   return (
@@ -85,57 +37,47 @@ function TopCard({ dish }: { dish: TopDish }) {
         width: "29vw",
         height: "88vh",
         flexShrink: 0,
-        marginLeft: "1.5vw",
-        marginRight: "1.5vw",
+        marginLeft: "2vw",
+        marginRight: "2vw",
       }}
     >
-      {/* Куточки */}
-      <LCorner position="tl" />
-      <LCorner position="tr" />
-      <LCorner position="bl" />
-      <LCorner position="br" />
-
-      {/* ── Зона фото: top=5%, height=43% ── */}
+      {/* ── Зона фото: top=3%, height=52%, width=90% ── */}
       <div
         style={{
           position: "absolute",
-          top: "5%",
-          left: "12.5%",   // (100% - 75%) / 2
-          width: "75%",
-          height: "43%",
+          top: "3%",
+          left: "5%",
+          width: "90%",
+          height: "52%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          overflow: "hidden",
         }}
       >
         {dish.photoUrl ? (
-          // Обгортка з position:relative потрібна для Image fill
           <div style={{ position: "relative", width: "100%", height: "100%" }}>
             <Image
               src={dish.photoUrl}
               alt={dish.name}
               fill
-              sizes="22vw"
+              sizes="26vw"
               style={{
                 objectFit: "contain",
                 mixBlendMode: "multiply",
               }}
             />
           </div>
-        ) : (
-          <span style={{ fontSize: "8vw", lineHeight: 1 }}>🍽</span>
-        )}
+        ) : null}
       </div>
 
-      {/* ── Назва: top=51% (5+43+3), height=16% ── */}
+      {/* ── Назва: top=58% (3+52+3), height=13% ── */}
       <div
         style={{
           position: "absolute",
-          top: "51%",
-          left: "10%",
-          width: "80%",
-          height: "16%",
+          top: "58%",
+          left: "8%",
+          width: "84%",
+          height: "13%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -152,7 +94,7 @@ function TopCard({ dish }: { dish: TopDish }) {
             textTransform: "uppercase",
             textAlign: "center",
             lineHeight: 1.1,
-            // Обрізання до 2 рядків (webkit — єдиний надійний спосіб для старих браузерів)
+            // Обрізання до 2 рядків — надійно для WebKit 2013+
             display: "-webkit-box",
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
@@ -163,13 +105,12 @@ function TopCard({ dish }: { dish: TopDish }) {
         </p>
       </div>
 
-      {/* ── Червоне коло: top=71% (5+43+3+16+4), центроване по X ── */}
+      {/* ── Червоне коло: top=74% (58+13+3), центроване по X ── */}
       <div
         style={{
           position: "absolute",
-          top: "71%",
+          top: "74%",
           left: "50%",
-          // translateX(-50%) — стабільно з WebKit 2013+
           transform: "translateX(-50%)",
           width: circleDiam,
           height: circleDiam,
