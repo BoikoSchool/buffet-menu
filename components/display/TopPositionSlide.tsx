@@ -1,6 +1,7 @@
-// Слайд топ-позицій — сумісний зі старими браузерами Smart TV (WebKit 2016+)
-// Розміри через vw/vh (1vw=19.2px, 1vh=10.8px на 1920×1080)
-// Позиціонування через position:absolute + %, без gap, без clamp
+// Слайд топ-позицій — сумісний зі старими браузерами Smart TV (WebKit 2014+)
+// Двосекційна картка: жовта "вітрина" 70% + темний "постамент" 30%
+// Цінник на межі зон: bottom = 30vh - 11vh = 19vh (центр кола точно на межі)
+// Без gap, без clamp, без aspect-ratio — лише vw/vh і position:absolute
 
 import Image from "next/image";
 
@@ -12,110 +13,111 @@ interface TopDish {
 }
 
 interface TopPositionSlideProps {
-  dishes: TopDish[]; // від 1 до 3 страв
+  dishes: TopDish[];
 }
 
-// Картка однієї топ-позиції
-// Ширина: 29vw (~557px), Висота: 88vh (~950px)
-//
-// Розбиття висоти (% від висоти картки):
-//   3%  — верхній відступ
-//  52%  — зона фото (максимальний герой)
-//   3%  — відступ фото→назва
-//  13%  — назва (1-2 рядки)
-//   3%  — відступ назва→коло
-//  23%  — діаметр червоного кола (11.4vw ≈ 219px = 23% від 88vh)
-//   3%  — нижній відступ
-// = 100%
 function TopCard({ dish }: { dish: TopDish }) {
-  const circleDiam = "11.4vw";
-
   return (
     <div
       style={{
         position: "relative",
-        width: "29vw",
-        height: "88vh",
-        flexShrink: 0,
-        marginLeft: "2vw",
-        marginRight: "2vw",
+        flex: "1 1 0",
+        height: "100%",
+        overflow: "hidden",
+        marginLeft: "0.5vw",
+        marginRight: "0.5vw",
       }}
     >
-      {/* ── Зона фото: top=3%, height=52%, width=90% ── */}
+      {/* ── Верхня зона 70% — жовта "вітрина" з радіальним градієнтом ── */}
       <div
         style={{
           position: "absolute",
-          top: "3%",
-          left: "5%",
-          width: "90%",
-          height: "52%",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "70%",
+          background:
+            "radial-gradient(circle at center, #FFD11A 0%, #F8C300 50%, #D9A800 100%)",
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
         }}
       >
         {dish.photoUrl ? (
-          <div style={{ position: "relative", width: "100%", height: "100%" }}>
+          <div
+            style={{
+              marginTop: "2vh",
+              width: "95%",
+              height: "50vh",
+              position: "relative",
+            }}
+          >
             <Image
               src={dish.photoUrl}
               alt={dish.name}
               fill
-              sizes="26vw"
+              sizes="32vw"
               style={{
                 objectFit: "contain",
-                mixBlendMode: "multiply",
+                filter: "drop-shadow(0 1.5vh 2vh rgba(0,0,0,0.3))",
               }}
             />
           </div>
         ) : null}
       </div>
 
-      {/* ── Назва: top=58% (3+52+3), height=13% ── */}
+      {/* ── Нижня зона 30% — темний "постамент" ── */}
+      {/* paddingTop: 12vh — щоб текст починався нижче цінника (11vh + 1vh проміжок) */}
       <div
         style={{
           position: "absolute",
-          top: "58%",
-          left: "8%",
-          width: "84%",
-          height: "13%",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: "30%",
+          background: "#1A1A1A",
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          overflow: "hidden",
+          paddingTop: "12vh",
+          paddingBottom: "2vh",
+          paddingLeft: "5%",
+          paddingRight: "5%",
         }}
       >
         <p
           style={{
             margin: 0,
             padding: 0,
-            fontSize: "3.5vw",
+            fontSize: "2.2vw",
             fontWeight: 900,
-            color: "#1A1A1A",
+            color: "#FFFFFF",
             textTransform: "uppercase",
             textAlign: "center",
             lineHeight: 1.1,
-            // Обрізання до 2 рядків — надійно для WebKit 2013+
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
+            wordWrap: "break-word",
+            maxWidth: "90%",
           }}
         >
           {dish.name}
         </p>
       </div>
 
-      {/* ── Червоне коло: top=74% (58+13+3), центроване по X ── */}
+      {/* ── Червоний цінник — центр рівно на межі 70%/30% ── */}
+      {/* На 1080px: 30% = 324px = 30vh; центр кола на 30vh від низу = bottom: 19vh */}
       <div
         style={{
           position: "absolute",
-          top: "74%",
+          bottom: "19vh",
           left: "50%",
           transform: "translateX(-50%)",
-          width: circleDiam,
-          height: circleDiam,
+          width: "22vh",
+          height: "22vh",
           borderRadius: "50%",
           background: "#DC1F26",
+          border: "0.4vh solid #FFFFFF",
+          boxShadow: "0 1vh 3vh rgba(0,0,0,0.35)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -137,11 +139,11 @@ function TopCard({ dish }: { dish: TopDish }) {
         <span
           style={{
             display: "block",
-            fontSize: "1.3vw",
+            fontSize: "1.5vw",
             fontWeight: 700,
             color: "#FFFFFF",
             lineHeight: 1,
-            marginTop: "0.3vw",
+            marginTop: "0.5vh",
             textAlign: "center",
           }}
         >
@@ -158,10 +160,11 @@ export function TopPositionSlide({ dishes }: TopPositionSlideProps) {
       style={{
         width: 1920,
         height: 1080,
-        background: "#F8C300",
+        background: "#1A1A1A",
         display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        alignItems: "stretch",
+        paddingLeft: "1vw",
+        paddingRight: "1vw",
       }}
     >
       {dishes.map((dish) => (
