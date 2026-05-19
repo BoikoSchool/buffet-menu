@@ -1,9 +1,12 @@
 // Слайд топ-позицій — сумісний зі старими браузерами Smart TV (WebKit 2014+)
 // Двосекційна картка: жовта "вітрина" 70% + темний "постамент" 30%
-// Цінник на межі зон: bottom = 30vh - 11vh = 19vh (центр кола точно на межі)
-// Без gap, без clamp, без aspect-ratio — лише vw/vh і position:absolute
+// Цінник на межі зон: bottom = 30vh - 11vh = 19vh
+// Без gap, без clamp, без aspect-ratio — vw/vh і position:absolute
 
 import Image from "next/image";
+
+// SVG-шум для тактильної текстури жовтої зони (feTurbulence — WebKit 2011+)
+const NOISE_BG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E")`;
 
 interface TopDish {
   id: string;
@@ -24,11 +27,11 @@ function TopCard({ dish }: { dish: TopDish }) {
         flex: "1 1 0",
         height: "100%",
         overflow: "hidden",
-        marginLeft: "0.5vw",
-        marginRight: "0.5vw",
+        marginLeft: "0.25vw",
+        marginRight: "0.25vw",
       }}
     >
-      {/* ── Верхня зона 70% — жовта "вітрина" з радіальним градієнтом ── */}
+      {/* ── Верхня зона 70% — жовта "вітрина" з текстурою шуму ── */}
       <div
         style={{
           position: "absolute",
@@ -36,8 +39,8 @@ function TopCard({ dish }: { dish: TopDish }) {
           left: 0,
           right: 0,
           height: "70%",
-          background:
-            "radial-gradient(circle at center, #FFD11A 0%, #F8C300 50%, #D9A800 100%)",
+          background: `${NOISE_BG}, radial-gradient(circle at center, #FFD11A 0%, #F8C300 50%, #D9A800 100%)`,
+          backgroundBlendMode: "overlay",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -56,7 +59,7 @@ function TopCard({ dish }: { dish: TopDish }) {
               src={dish.photoUrl}
               alt={dish.name}
               fill
-              sizes="32vw"
+              sizes="33vw"
               style={{
                 objectFit: "contain",
                 filter: "drop-shadow(0 1.5vh 2vh rgba(0,0,0,0.3))",
@@ -67,7 +70,7 @@ function TopCard({ dish }: { dish: TopDish }) {
       </div>
 
       {/* ── Нижня зона 30% — темний "постамент" ── */}
-      {/* paddingTop: 12vh — щоб текст починався нижче цінника (11vh + 1vh проміжок) */}
+      {/* paddingTop 12vh: текст одразу під цінником (11vh нижня половина + 1vh зазор) */}
       <div
         style={{
           position: "absolute",
@@ -79,7 +82,7 @@ function TopCard({ dish }: { dish: TopDish }) {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "flex-start",
           paddingTop: "12vh",
           paddingBottom: "2vh",
           paddingLeft: "5%",
@@ -90,7 +93,7 @@ function TopCard({ dish }: { dish: TopDish }) {
           style={{
             margin: 0,
             padding: 0,
-            fontSize: "2.2vw",
+            fontSize: "3vw",
             fontWeight: 900,
             color: "#FFFFFF",
             textTransform: "uppercase",
@@ -105,7 +108,7 @@ function TopCard({ dish }: { dish: TopDish }) {
       </div>
 
       {/* ── Червоний цінник — центр рівно на межі 70%/30% ── */}
-      {/* На 1080px: 30% = 324px = 30vh; центр кола на 30vh від низу = bottom: 19vh */}
+      {/* bottom: 19vh = 30vh (межа зон) − 11vh (половина 22vh кола) */}
       <div
         style={{
           position: "absolute",
@@ -117,7 +120,8 @@ function TopCard({ dish }: { dish: TopDish }) {
           borderRadius: "50%",
           background: "#DC1F26",
           border: "0.4vh solid #FFFFFF",
-          boxShadow: "0 1vh 3vh rgba(0,0,0,0.35)",
+          boxShadow:
+            "0 1vh 3vh rgba(0,0,0,0.35), 0 0 5vh rgba(220,31,38,0.4), 0 0 8vh rgba(220,31,38,0.2)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -160,11 +164,10 @@ export function TopPositionSlide({ dishes }: TopPositionSlideProps) {
       style={{
         width: 1920,
         height: 1080,
-        background: "#1A1A1A",
+        background: "#F8C300",
+        overflow: "hidden",
         display: "flex",
         alignItems: "stretch",
-        paddingLeft: "1vw",
-        paddingRight: "1vw",
       }}
     >
       {dishes.map((dish) => (
