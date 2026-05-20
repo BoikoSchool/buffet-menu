@@ -11,7 +11,7 @@ export default function DisplayPage() {
     <div
       style={{
         width: "100vw",
-        height: "100vh",
+        height: "calc(var(--vh, 1vh) * 100)",
         overflow: "hidden",
         cursor: "none",
         background: "#1A1A1A",

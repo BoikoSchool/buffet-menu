@@ -1,11 +1,12 @@
-// Слайд топ-позицій — сумісний зі старими браузерами Smart TV (WebKit 2014+)
-// Двосекційна картка: жовта "вітрина" 70% + темний "постамент" 30%
-// Цінник на межі зон: bottom = 30vh - 11vh = 19vh
-// Без gap, без clamp, без aspect-ratio — vw/vh і position:absolute
+// Слайд топ-позицій — без фіксованих vh всередині карток
+// Висоти через flex % — стабільно на будь-якому viewport (960×434 або 1920×1080)
+// Цінник через vmin: на ландшафті vmin=vh, тому 20vmin=20% висоти картки
+// bottom: 15% = 25% (темна зона) − 10% (пів-цінника) → центр точно на межі
+// Без aspect-ratio, без clamp, без gap
 
 import Image from "next/image";
 
-// SVG-шум для тактильної текстури жовтої зони (feTurbulence — WebKit 2011+)
+// SVG-шум для тактильності жовтої зони (feTurbulence — Chrome 26+)
 const NOISE_BG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E")`;
 
 interface TopDish {
@@ -23,36 +24,35 @@ function TopCard({ dish }: { dish: TopDish }) {
   return (
     <div
       style={{
-        position: "relative",
         flex: "1 1 0",
+        minWidth: 0,
         height: "100%",
+        display: "flex",
+        flexDirection: "column",
         overflow: "hidden",
+        position: "relative",
         marginLeft: "0.25vw",
         marginRight: "0.25vw",
       }}
     >
-      {/* ── Верхня зона 70% — жовта "вітрина" з текстурою шуму ── */}
+      {/* ── Жовта "вітрина" — займає весь простір після темної зони ── */}
       <div
         style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "70%",
+          flex: 1,
           background: `${NOISE_BG}, radial-gradient(circle at center, #FFD11A 0%, #F8C300 50%, #D9A800 100%)`,
           backgroundBlendMode: "overlay",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          justifyContent: "center",
         }}
       >
         {dish.photoUrl ? (
           <div
             style={{
-              marginTop: "2vh",
-              width: "95%",
-              height: "50vh",
               position: "relative",
+              width: "85%",
+              height: "80%",
             }}
           >
             <Image
@@ -62,29 +62,21 @@ function TopCard({ dish }: { dish: TopDish }) {
               sizes="33vw"
               style={{
                 objectFit: "contain",
-                filter: "drop-shadow(0 1.5vh 2vh rgba(0,0,0,0.3))",
+                filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))",
               }}
             />
           </div>
         ) : null}
       </div>
 
-      {/* ── Нижня зона 30% — темний "постамент" ── */}
-      {/* paddingTop 12vh: текст одразу під цінником (11vh нижня половина + 1vh зазор) */}
+      {/* ── Темний "постамент" — фіксовані 25% висоти картки ── */}
       <div
         style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: "30%",
+          flex: "0 0 25%",
           background: "#1A1A1A",
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
-          justifyContent: "flex-start",
-          paddingTop: "12vh",
-          paddingBottom: "2vh",
+          justifyContent: "center",
           paddingLeft: "5%",
           paddingRight: "5%",
         }}
@@ -93,35 +85,35 @@ function TopCard({ dish }: { dish: TopDish }) {
           style={{
             margin: 0,
             padding: 0,
-            fontSize: "3vw",
+            fontSize: "1.6vw",
             fontWeight: 900,
             color: "#FFFFFF",
             textTransform: "uppercase",
             textAlign: "center",
             lineHeight: 1.1,
             wordWrap: "break-word",
-            maxWidth: "90%",
+            maxWidth: "100%",
           }}
         >
           {dish.name}
         </p>
       </div>
 
-      {/* ── Червоний цінник — центр рівно на межі 70%/30% ── */}
-      {/* bottom: 19vh = 30vh (межа зон) − 11vh (половина 22vh кола) */}
+      {/* ── Червоний цінник — vmin для розміру, bottom: 15% для позиції ── */}
+      {/* На ландшафті: vmin=vh, 20vmin=20% картки, пів=10%, bottom=25%-10%=15% */}
       <div
         style={{
           position: "absolute",
-          bottom: "19vh",
+          bottom: "15%",
           left: "50%",
           transform: "translateX(-50%)",
-          width: "22vh",
-          height: "22vh",
+          width: "20vmin",
+          height: "20vmin",
           borderRadius: "50%",
           background: "#DC1F26",
-          border: "0.4vh solid #FFFFFF",
+          border: "0.4vmin solid #FFFFFF",
           boxShadow:
-            "0 1vh 3vh rgba(0,0,0,0.35), 0 0 5vh rgba(220,31,38,0.4), 0 0 8vh rgba(220,31,38,0.2)",
+            "0 4px 15px rgba(0,0,0,0.35), 0 0 20px rgba(220,31,38,0.4), 0 0 35px rgba(220,31,38,0.2)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -131,7 +123,7 @@ function TopCard({ dish }: { dish: TopDish }) {
         <span
           style={{
             display: "block",
-            fontSize: "4.5vw",
+            fontSize: "4vmin",
             fontWeight: 900,
             color: "#FFFFFF",
             lineHeight: 1,
@@ -143,11 +135,11 @@ function TopCard({ dish }: { dish: TopDish }) {
         <span
           style={{
             display: "block",
-            fontSize: "1.5vw",
+            fontSize: "1.2vmin",
             fontWeight: 700,
             color: "#FFFFFF",
             lineHeight: 1,
-            marginTop: "0.5vh",
+            marginTop: "0.3em",
             textAlign: "center",
           }}
         >
@@ -162,14 +154,17 @@ export function TopPositionSlide({ dishes }: TopPositionSlideProps) {
   return (
     <div
       style={{
-        width: 1920,
-        height: 1080,
-        background: "#F8C300",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        // JS у DisplayLoop виставляє --vh = window.innerHeight * 0.01
+        // calc() з var() підтримується в Chrome 49+ (TV: Chrome 132 ✓)
+        height: "calc(var(--vh, 1vh) * 100)" as string,
         overflow: "hidden",
         display: "flex",
-        alignItems: "stretch",
-        marginLeft: "auto",
-        marginRight: "auto",
+        flexDirection: "row",
+        background: "#F8C300",
       }}
     >
       {dishes.map((dish) => (
