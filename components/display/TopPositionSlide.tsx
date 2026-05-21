@@ -41,20 +41,32 @@ function TopCard({ dish }: { dish: TopDish }) {
             bottom: "30%",
           }}
         >
-          {/* ── Арка-постамент — «сцена» за продуктом, flat bottom на межі темної зони ── */}
+          {/* ── Підсвітка — кремова пляма позаду продукту, світліша за жовтий фон ── */}
           <div
             style={{
               position: "absolute",
-              bottom: 0,
-              left: "10%",
-              width: "80%",
-              height: "85%",
-              borderRadius: "50% 50% 0 0 / 40% 40% 0 0",
-              background: "#C8910A",
+              inset: 0,
+              background:
+                "radial-gradient(ellipse at 50% 40%, rgba(255,255,240,0.65) 0%, rgba(255,250,200,0.3) 40%, rgba(248,195,0,0) 70%)",
+              pointerEvents: "none",
               zIndex: 1,
             }}
           />
-          {/* ── Фото поверх арки, легка тінь для глибини ── */}
+          {/* ── Овальна тінь — контактна поверхня під продуктом ── */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: "8%",
+              left: "20%",
+              right: "20%",
+              height: "10%",
+              background:
+                "radial-gradient(ellipse at center, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.14) 55%, transparent 100%)",
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+          />
+          {/* ── Фото поверх підсвітки, легкий drop-shadow повторює контур ── */}
           <div style={{ position: "relative", width: "100%", height: "100%", zIndex: 2 }}>
             <Image
               src={dish.photoUrl}
@@ -63,7 +75,7 @@ function TopCard({ dish }: { dish: TopDish }) {
               sizes="33vw"
               style={{
                 objectFit: "contain",
-                filter: "drop-shadow(0 1vh 0.5vh rgba(0,0,0,0.25))",
+                filter: "drop-shadow(0 1vh 0.8vh rgba(0,0,0,0.3))",
               }}
             />
           </div>
