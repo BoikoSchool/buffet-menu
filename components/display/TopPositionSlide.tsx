@@ -47,7 +47,7 @@ function TopCard({ dish }: { dish: TopDish }) {
               position: "absolute",
               inset: 0,
               background:
-                "radial-gradient(ellipse at 50% 40%, rgba(255,255,240,0.65) 0%, rgba(255,250,200,0.3) 40%, rgba(248,195,0,0) 70%)",
+                "radial-gradient(ellipse 65% 55% at center 45%, rgba(255,252,230,0.7) 0%, rgba(255,248,200,0.4) 30%, rgba(255,240,160,0.15) 55%, rgba(248,195,0,0) 75%)",
               pointerEvents: "none",
               zIndex: 1,
             }}
@@ -75,7 +75,8 @@ function TopCard({ dish }: { dish: TopDish }) {
               sizes="33vw"
               style={{
                 objectFit: "contain",
-                filter: "drop-shadow(0 1vh 0.8vh rgba(0,0,0,0.3))",
+                filter:
+                  "drop-shadow(0 1vh 1.5vh rgba(0,0,0,0.35)) drop-shadow(0 2vh 4vh rgba(0,0,0,0.20))",
               }}
             />
           </div>
