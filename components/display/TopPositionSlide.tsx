@@ -226,7 +226,7 @@ export function TopPositionSlide({ dishes }: TopPositionSlideProps) {
           src="/logo.png"
           alt="Boiko School"
           style={{
-            height: "11vh",
+            height: "8vh",
             width: "auto",
             // Перетворює логотип на чорний силует — добре видно на жовтому
             // Прибери filter якщо логотип вже темного кольору
