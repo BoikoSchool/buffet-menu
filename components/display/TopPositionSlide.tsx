@@ -1,4 +1,5 @@
 // Слайд топ-позицій — фіксована темна зона 30%, однакова геометрія всіх карток
+// Шапка: position absolute, h=10%, один div на весь слайд (не на кожну картку)
 // Цінник: absolute у темній зоні, translateY(-60%) → 60% у жовтому, 40% у темному
 // Назва: 2.2vw, max 3 рядки через maxHeight 8vw — симетрія важливіша за автоадаптацію
 
@@ -29,12 +30,12 @@ function TopCard({ dish }: { dish: TopDish }) {
         marginRight: "0.25vw",
       }}
     >
-      {/* ── Фото — від 3% зверху до межі темної зони (bottom: 30%) ── */}
+      {/* ── Фото — починається після шапки (11% = 10% шапка + 1% зазор) ── */}
       {dish.photoUrl ? (
         <div
           style={{
             position: "absolute",
-            top: "3%",
+            top: "11%",
             left: "5%",
             right: "5%",
             bottom: "30%",
@@ -162,6 +163,50 @@ export function TopPositionSlide({ dishes }: TopPositionSlideProps) {
         flexDirection: "row",
       }}
     >
+      {/* ── Шапка бренду — один div на весь слайд, поверх карток ── */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "10%",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingTop: "2.5vh",
+          paddingLeft: "3vw",
+          paddingRight: "3vw",
+          zIndex: 5,
+        }}
+      >
+        <span
+          style={{
+            fontSize: "1.8vw",
+            fontWeight: 900,
+            color: "#1A1A1A",
+            textTransform: "uppercase",
+            letterSpacing: "0.1vw",
+            lineHeight: 1,
+          }}
+        >
+          BOIKO FOOD
+        </span>
+        <span
+          style={{
+            fontSize: "1.2vw",
+            fontWeight: 700,
+            color: "#1A1A1A",
+            textTransform: "uppercase",
+            letterSpacing: "0.08vw",
+            lineHeight: 1,
+          }}
+        >
+          ◆ ТОП ТИЖНЯ ◆
+        </span>
+      </div>
+
       {dishes.map((dish) => (
         <TopCard key={dish.id} dish={dish} />
       ))}
