@@ -41,18 +41,20 @@ function TopCard({ dish }: { dish: TopDish }) {
             bottom: "30%",
           }}
         >
-          {/* ── Підсвітка — радіальна пляма позаду продукту ── */}
+          {/* ── Арка-постамент — «сцена» за продуктом, flat bottom на межі темної зони ── */}
           <div
             style={{
               position: "absolute",
-              inset: 0,
-              background:
-                "radial-gradient(ellipse at center, rgba(255,250,200,0.55) 0%, rgba(255,240,150,0.25) 30%, rgba(248,195,0,0) 65%)",
-              pointerEvents: "none",
+              bottom: 0,
+              left: "10%",
+              width: "80%",
+              height: "85%",
+              borderRadius: "50% 50% 0 0 / 40% 40% 0 0",
+              background: "#C8910A",
               zIndex: 1,
             }}
           />
-          {/* ── Фото поверх підсвітки, тінь імітує «стоїть на сцені» ── */}
+          {/* ── Фото поверх арки, легка тінь для глибини ── */}
           <div style={{ position: "relative", width: "100%", height: "100%", zIndex: 2 }}>
             <Image
               src={dish.photoUrl}
@@ -61,8 +63,7 @@ function TopCard({ dish }: { dish: TopDish }) {
               sizes="33vw"
               style={{
                 objectFit: "contain",
-                filter:
-                  "drop-shadow(0 1.5vh 1vh rgba(0,0,0,0.45)) drop-shadow(0 0.5vh 2vh rgba(0,0,0,0.25))",
+                filter: "drop-shadow(0 1vh 0.5vh rgba(0,0,0,0.25))",
               }}
             />
           </div>
@@ -213,7 +214,7 @@ export function TopPositionSlide({ dishes }: TopPositionSlideProps) {
           src="/logo.png"
           alt="Boiko School"
           style={{
-            height: "15vh",
+            height: "11vh",
             width: "auto",
             // Перетворює логотип на чорний силует — добре видно на жовтому
             // Прибери filter якщо логотип вже темного кольору
