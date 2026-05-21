@@ -142,61 +142,64 @@ export function CategorySlide({ group }: CategorySlideProps) {
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
+        padding: "3vh 2vw",
+        boxSizing: "border-box",
       }}
     >
-      {/* Шапка — 8vh */}
+      {/* Шапка — 8vh, ліво: лого + назва школи, право: заголовок меню */}
       <div
         style={{
           height: "8vh",
           flexShrink: 0,
           display: "flex",
           alignItems: "center",
-          paddingLeft: "3vw",
-          paddingRight: "3vw",
+          justifyContent: "space-between",
           borderBottom: "1px solid #282828",
         }}
       >
-        <div
-          style={{
-            width: "5.5vh",
-            height: "5.5vh",
-            flexShrink: 0,
-            position: "relative",
-          }}
-        >
-          <Image
-            src="/logo.png"
-            alt="Private Boiko School"
-            fill
-            style={{ objectFit: "contain" }}
-            priority
-          />
-        </div>
-        <div style={{ marginLeft: "1.4vw" }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <div
+            style={{
+              width: "5.5vh",
+              height: "5.5vh",
+              flexShrink: 0,
+              position: "relative",
+            }}
+          >
+            <Image
+              src="/logo.png"
+              alt="Private Boiko School"
+              fill
+              style={{ objectFit: "contain" }}
+              priority
+            />
+          </div>
           <p
             style={{
+              marginLeft: "1.4vw",
               color: "#FFFFFF",
               fontSize: "1.3vw",
               fontWeight: 700,
               letterSpacing: "0.14em",
               textTransform: "uppercase",
-              lineHeight: 1.2,
+              lineHeight: 1,
             }}
           >
-            Private Boiko School
-          </p>
-          <p
-            style={{
-              color: "#F8C300",
-              fontSize: "0.75vw",
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              lineHeight: 1.3,
-            }}
-          >
-            Меню буфету
+            PRIVATE BOIKO SCHOOL
           </p>
         </div>
+        <p
+          style={{
+            color: "#F8C300",
+            fontSize: "1.4vw",
+            fontWeight: 700,
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            lineHeight: 1,
+          }}
+        >
+          МЕНЮ БУФЕТУ
+        </p>
       </div>
 
       {/* Основний вміст — 92vh */}

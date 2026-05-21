@@ -164,6 +164,7 @@ export function TopPositionSlide({ dishes }: TopPositionSlideProps) {
       }}
     >
       {/* ── Шапка бренду — один div на весь слайд, поверх карток ── */}
+      {/* boxSizing border-box: paddingTop не виходить за height 10% */}
       <div
         style={{
           position: "absolute",
@@ -171,6 +172,7 @@ export function TopPositionSlide({ dishes }: TopPositionSlideProps) {
           left: 0,
           right: 0,
           height: "10%",
+          boxSizing: "border-box",
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
@@ -193,6 +195,18 @@ export function TopPositionSlide({ dishes }: TopPositionSlideProps) {
         >
           BOIKO FOOD
         </span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logo.png"
+          alt="Boiko School"
+          style={{
+            height: "7vh",
+            width: "auto",
+            // Перетворює логотип на чорний силует — добре видно на жовтому
+            // Прибери filter якщо логотип вже темного кольору
+            filter: "brightness(0) saturate(100%)",
+          }}
+        />
         <span
           style={{
             fontSize: "1.2vw",
