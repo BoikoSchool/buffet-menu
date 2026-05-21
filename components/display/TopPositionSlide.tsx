@@ -35,7 +35,7 @@ function TopCard({ dish }: { dish: TopDish }) {
         <div
           style={{
             position: "absolute",
-            top: "calc(11% - 5vh)",
+            top: "calc(11% - 10vh)",
             left: "5%",
             right: "5%",
             bottom: "30%",
@@ -213,7 +213,7 @@ export function TopPositionSlide({ dishes }: TopPositionSlideProps) {
           src="/logo.png"
           alt="Boiko School"
           style={{
-            height: "7vh",
+            height: "15vh",
             width: "auto",
             // Перетворює логотип на чорний силует — добре видно на жовтому
             // Прибери filter якщо логотип вже темного кольору
