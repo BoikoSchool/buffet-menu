@@ -35,7 +35,7 @@ function TopCard({ dish }: { dish: TopDish }) {
         <div
           style={{
             position: "absolute",
-            top: "11%",
+            top: "calc(11% - 5vh)",
             left: "5%",
             right: "5%",
             bottom: "30%",
