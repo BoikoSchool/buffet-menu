@@ -1,7 +1,6 @@
-// Слайд топ-позицій — адаптивна висота темної зони, без фіксованих vh
-// Цінник: top: 0 + translateY(-60%) у темній зоні → 60% у жовтому, 40% у темному
-// Темна зона: flex 0 0 auto + minHeight 22% + boxSizing border-box → росте під назву
-// paddingTop: calc(8vmin + 1.5vw) → текст завжди нижче цінника (8vmin = 40% badge)
+// Слайд топ-позицій — фіксована темна зона 30%, однакова геометрія всіх карток
+// Цінник: absolute у темній зоні, translateY(-60%) → 60% у жовтому, 40% у темному
+// Назва: 2.2vw, max 3 рядки через maxHeight 8vw — симетрія важливіша за автоадаптацію
 
 import Image from "next/image";
 
@@ -22,65 +21,59 @@ function TopCard({ dish }: { dish: TopDish }) {
   return (
     <div
       style={{
+        position: "relative",
         flex: "1 1 0",
         minWidth: 0,
         height: "100%",
-        display: "flex",
-        flexDirection: "column",
         marginLeft: "0.25vw",
         marginRight: "0.25vw",
       }}
     >
-      {/* ── Жовта зона — займає весь простір над темною зоною ── */}
-      <div style={{ flex: 1, position: "relative" }}>
-        {dish.photoUrl ? (
-          <div
-            style={{
-              position: "absolute",
-              top: "3%",
-              left: "5%",
-              right: "5%",
-              bottom: "3%",
-            }}
-          >
-            <div style={{ position: "relative", width: "100%", height: "100%" }}>
-              <Image
-                src={dish.photoUrl}
-                alt={dish.name}
-                fill
-                sizes="33vw"
-                style={{
-                  objectFit: "contain",
-                  filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.35))",
-                }}
-              />
-            </div>
+      {/* ── Фото — від 3% зверху до межі темної зони (bottom: 30%) ── */}
+      {dish.photoUrl ? (
+        <div
+          style={{
+            position: "absolute",
+            top: "3%",
+            left: "5%",
+            right: "5%",
+            bottom: "30%",
+          }}
+        >
+          <div style={{ position: "relative", width: "100%", height: "100%" }}>
+            <Image
+              src={dish.photoUrl}
+              alt={dish.name}
+              fill
+              sizes="33vw"
+              style={{
+                objectFit: "contain",
+                filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.35))",
+              }}
+            />
           </div>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
 
-      {/* ── Темна зона — росте під вміст, мінімум 22% висоти картки ── */}
-      {/* overflow: visible — цінник виступає вгору у жовту зону */}
-      {/* boxSizing border-box — minHeight включає padding */}
+      {/* ── Темна зона — фіксована 30% висоти, однакова для всіх карток ── */}
+      {/* overflow: visible (default) — дозволяє цінникові виступати у жовту зону */}
       <div
         style={{
-          flex: "0 0 auto",
-          minHeight: "22%",
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: "30%",
           background: "#1A1A1A",
-          position: "relative",
-          overflow: "visible",
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          paddingTop: "calc(8vmin + 1.5vw)",
-          paddingBottom: "2vw",
-          paddingLeft: "5%",
-          paddingRight: "5%",
+          padding: "4vw 2vw 2vw 2vw",
           boxSizing: "border-box",
         }}
       >
-        {/* ── Цінник — top: 0 + translateY(-60%) → 60% у жовтому, 40% у темному ── */}
-        {/* Позиція відносно темної зони: завжди на межі, незалежно від висоти зони */}
+        {/* ── Цінник — top: 0 + translateY(-60%) → завжди на межі зон ── */}
         <div
           style={{
             position: "absolute",
@@ -128,19 +121,22 @@ function TopCard({ dish }: { dish: TopDish }) {
           </span>
         </div>
 
-        {/* ── Назва — нижче цінника, без обрізання, 2-3 рядки вільно ── */}
+        {/* ── Назва — фіксований шрифт 2.2vw, макс 3 рядки ── */}
         <p
           style={{
             margin: 0,
             padding: 0,
-            fontSize: "2.5vw",
+            fontSize: "2.2vw",
             fontWeight: 900,
             color: "#FFFFFF",
             textTransform: "uppercase",
             textAlign: "center",
             lineHeight: 1.15,
             wordWrap: "break-word",
-            maxWidth: "100%",
+            overflowWrap: "break-word",
+            maxWidth: "90%",
+            maxHeight: "8vw",
+            overflow: "hidden",
           }}
         >
           {dish.name}
