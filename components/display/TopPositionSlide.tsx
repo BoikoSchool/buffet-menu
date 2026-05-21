@@ -3,7 +3,6 @@
 // Цінник: absolute у темній зоні, translateY(-60%) → 60% у жовтому, 40% у темному
 // Назва: 2.2vw, max 3 рядки через maxHeight 8vw — симетрія важливіша за автоадаптацію
 
-import Image from "next/image";
 
 const NOISE_BG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E")`;
 
@@ -52,34 +51,22 @@ function TopCard({ dish }: { dish: TopDish }) {
               zIndex: 1,
             }}
           />
-          {/* ── Овальна тінь — контактна поверхня під продуктом ── */}
-          <div
+          {/* ── Фото поверх підсвітки — <img> зберігає PNG альфа-канал (next/image конвертує в WebP) ── */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={dish.photoUrl}
+            alt={dish.name}
             style={{
               position: "absolute",
-              bottom: "8%",
-              left: "20%",
-              right: "20%",
-              height: "10%",
-              background:
-                "radial-gradient(ellipse at center, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.14) 55%, transparent 100%)",
-              pointerEvents: "none",
-              zIndex: 1,
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              zIndex: 2,
+              filter:
+                "drop-shadow(0 1vh 1.5vh rgba(0,0,0,0.35)) drop-shadow(0 2vh 4vh rgba(0,0,0,0.20))",
             }}
           />
-          {/* ── Фото поверх підсвітки, легкий drop-shadow повторює контур ── */}
-          <div style={{ position: "relative", width: "100%", height: "100%", zIndex: 2 }}>
-            <Image
-              src={dish.photoUrl}
-              alt={dish.name}
-              fill
-              sizes="33vw"
-              style={{
-                objectFit: "contain",
-                filter:
-                  "drop-shadow(0 1vh 1.5vh rgba(0,0,0,0.35)) drop-shadow(0 2vh 4vh rgba(0,0,0,0.20))",
-              }}
-            />
-          </div>
         </div>
       ) : null}
 
