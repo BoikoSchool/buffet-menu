@@ -41,7 +41,19 @@ function TopCard({ dish }: { dish: TopDish }) {
             bottom: "30%",
           }}
         >
-          <div style={{ position: "relative", width: "100%", height: "100%" }}>
+          {/* ── Підсвітка — радіальна пляма позаду продукту ── */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "radial-gradient(ellipse at center, rgba(255,250,200,0.55) 0%, rgba(255,240,150,0.25) 30%, rgba(248,195,0,0) 65%)",
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+          />
+          {/* ── Фото поверх підсвітки, тінь імітує «стоїть на сцені» ── */}
+          <div style={{ position: "relative", width: "100%", height: "100%", zIndex: 2 }}>
             <Image
               src={dish.photoUrl}
               alt={dish.name}
@@ -49,7 +61,8 @@ function TopCard({ dish }: { dish: TopDish }) {
               sizes="33vw"
               style={{
                 objectFit: "contain",
-                filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.35))",
+                filter:
+                  "drop-shadow(0 1.5vh 1vh rgba(0,0,0,0.45)) drop-shadow(0 0.5vh 2vh rgba(0,0,0,0.25))",
               }}
             />
           </div>
