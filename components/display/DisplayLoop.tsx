@@ -21,19 +21,31 @@ type SlideDescriptor =
   | { type: "category"; group: SlideGroup }
   | { type: "top"; dishes: DisplayData["topPositions"] };
 
+function interleave<C, T>(categories: C[], tops: T[]): (C | T)[] {
+  if (tops.length === 0) return categories;
+  if (categories.length === 0) return tops;
+  const result: (C | T)[] = [];
+  let topIndex = 0;
+  for (const cat of categories) {
+    result.push(cat);
+    result.push(tops[topIndex % tops.length]);
+    topIndex++;
+  }
+  return result;
+}
+
 function buildSlideQueue(data: DisplayData): SlideDescriptor[] {
-  const slides: SlideDescriptor[] = [];
+  const categorySlides: SlideDescriptor[] = data.slideGroups.map((group) => ({
+    type: "category",
+    group,
+  }));
 
-  for (const group of data.slideGroups) {
-    slides.push({ type: "category", group });
-  }
+  const topSlides: SlideDescriptor[] = chunkArray(data.topPositions, 3).map((chunk) => ({
+    type: "top",
+    dishes: chunk,
+  }));
 
-  const topChunks = chunkArray(data.topPositions, 3);
-  for (const chunk of topChunks) {
-    slides.push({ type: "top", dishes: chunk });
-  }
-
-  return slides;
+  return interleave(categorySlides, topSlides);
 }
 
 export function DisplayLoop() {
