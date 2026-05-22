@@ -21,17 +21,8 @@ type SlideDescriptor =
   | { type: "category"; group: SlideGroup }
   | { type: "top"; dishes: DisplayData["topPositions"] };
 
-function interleave<C, T>(categories: C[], tops: T[]): (C | T)[] {
-  if (tops.length === 0) return categories;
-  if (categories.length === 0) return tops;
-  const result: (C | T)[] = [];
-  let topIndex = 0;
-  for (const cat of categories) {
-    result.push(cat);
-    result.push(tops[topIndex % tops.length]);
-    topIndex++;
-  }
-  return result;
+function gcd(a: number, b: number): number {
+  return b === 0 ? a : gcd(b, a % b);
 }
 
 function buildSlideQueue(data: DisplayData): SlideDescriptor[] {
@@ -45,7 +36,17 @@ function buildSlideQueue(data: DisplayData): SlideDescriptor[] {
     dishes: chunk,
   }));
 
-  return interleave(categorySlides, topSlides);
+  if (topSlides.length === 0) return categorySlides;
+  if (categorySlides.length === 0) return topSlides;
+
+  // Повний цикл = LCM пар: К і Т крутяться незалежно, жоден слайд не губиться
+  const cycles = (categorySlides.length * topSlides.length) / gcd(categorySlides.length, topSlides.length);
+  const result: SlideDescriptor[] = [];
+  for (let i = 0; i < cycles; i++) {
+    result.push(categorySlides[i % categorySlides.length]);
+    result.push(topSlides[i % topSlides.length]);
+  }
+  return result;
 }
 
 export function DisplayLoop() {
