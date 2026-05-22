@@ -154,7 +154,7 @@ export function TopPositionSlide({ dishes }: TopPositionSlideProps) {
         width: "100vw",
         height: "calc(var(--vh, 1vh) * 100)" as string,
         overflow: "hidden",
-        background: "#f8de80ff",
+        background: "#ffebc6",
         display: "flex",
         flexDirection: "row",
       }}
