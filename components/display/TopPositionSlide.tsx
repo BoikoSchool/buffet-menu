@@ -1,10 +1,7 @@
 // Слайд топ-позицій — фіксована темна зона 30%, однакова геометрія всіх карток
 // Шапка: position absolute, h=10%, один div на весь слайд (не на кожну картку)
 // Цінник: absolute у темній зоні, translateY(-60%) → 60% у жовтому, 40% у темному
-// Назва: 2.2vw, max 3 рядки через maxHeight 8vw — симетрія важливіша за автоадаптацію
-
-
-const NOISE_BG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E")`;
+// Фото: PNG з вбудованою декорацією (арка, тінь) — жодних CSS-ефектів на зображенні
 
 interface TopDish {
   id: string;
@@ -29,42 +26,28 @@ function TopCard({ dish }: { dish: TopDish }) {
         marginRight: "0.25vw",
       }}
     >
-      {/* ── Фото — починається після шапки (11% = 10% шапка + 1% зазор) ── */}
+      {/* ── Фото — PNG з вбудованою декорацією, без CSS-ефектів ── */}
       {dish.photoUrl ? (
         <div
           style={{
             position: "absolute",
-            top: "calc(11% - 10vh)",
-            left: "5%",
-            right: "5%",
+            top: "10%",
+            left: 0,
+            right: 0,
             bottom: "30%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          {/* ── Підсвітка — кремова пляма позаду продукту, світліша за жовтий фон ── */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background:
-                "radial-gradient(ellipse 65% 55% at center 45%, rgba(255,252,230,0.7) 0%, rgba(255,248,200,0.4) 30%, rgba(255,240,160,0.15) 55%, rgba(248,195,0,0) 75%)",
-              pointerEvents: "none",
-              zIndex: 1,
-            }}
-          />
-          {/* ── Фото поверх підсвітки — <img> зберігає PNG альфа-канал (next/image конвертує в WebP) ── */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={dish.photoUrl}
             alt={dish.name}
             style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
+              maxWidth: "95%",
+              maxHeight: "100%",
               objectFit: "contain",
-              zIndex: 2,
-              filter:
-                "drop-shadow(0 1vh 1.5vh rgba(0,0,0,0.35)) drop-shadow(0 2vh 4vh rgba(0,0,0,0.20))",
             }}
           />
         </div>
@@ -171,8 +154,7 @@ export function TopPositionSlide({ dishes }: TopPositionSlideProps) {
         width: "100vw",
         height: "calc(var(--vh, 1vh) * 100)" as string,
         overflow: "hidden",
-        background: `${NOISE_BG}, radial-gradient(ellipse at 50% 35%, #FFD11A 0%, #F8C300 55%, #D9A800 100%)`,
-        backgroundBlendMode: "overlay",
+        background: "#F8C300",
         display: "flex",
         flexDirection: "row",
       }}
