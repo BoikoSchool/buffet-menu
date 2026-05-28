@@ -146,9 +146,9 @@ export function DisplayLoop() {
         }}
       >
         {currentSlide.type === "category" ? (
-          <CategorySlide group={currentSlide.group} />
+          <CategorySlide key={currentIndex} group={currentSlide.group} />
         ) : (
-          <TopPositionSlide dishes={currentSlide.dishes} />
+          <TopPositionSlide key={currentIndex} dishes={currentSlide.dishes} />
         )}
       </div>
     </div>

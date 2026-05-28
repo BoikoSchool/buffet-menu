@@ -44,6 +44,7 @@ function TopCard({ dish }: { dish: TopDish }) {
           <img
             src={dish.photoUrl}
             alt={dish.name}
+            className="top-photo-enter"
             style={{
               maxWidth: "95%",
               maxHeight: "100%",
@@ -73,6 +74,7 @@ function TopCard({ dish }: { dish: TopDish }) {
       >
         {/* ── Цінник — top: 0 + translateY(-60%) → завжди на межі зон ── */}
         <div
+          className="top-price-enter"
           style={{
             position: "absolute",
             top: 0,
@@ -121,6 +123,7 @@ function TopCard({ dish }: { dish: TopDish }) {
 
         {/* ── Назва — фіксований шрифт 2.2vw, макс 3 рядки ── */}
         <p
+          className="top-name-enter"
           style={{
             margin: 0,
             padding: 0,

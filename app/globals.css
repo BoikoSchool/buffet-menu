@@ -48,3 +48,44 @@ body {
 .font-display {
   font-family: "Bebas Neue", sans-serif;
 }
+
+/* ── Анімації появи слайдів /display ── */
+
+@keyframes categorySlideEnter {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes topPhotoEnter {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes topNameEnter {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* translate(-50%,-60%) — позиціювання цінника — включено в кейфрейм,
+   бо анімація перекриває inline transform */
+@keyframes topPriceEnter {
+  0%   { opacity: 0; transform: translate(-50%, -60%) scale(0); }
+  70%  {             transform: translate(-50%, -60%) scale(1.1); }
+  100% { opacity: 1; transform: translate(-50%, -60%) scale(1); }
+}
+
+.category-slide-enter {
+  animation: categorySlideEnter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.top-photo-enter {
+  animation: topPhotoEnter 500ms ease-out 150ms both;
+}
+
+.top-name-enter {
+  animation: topNameEnter 400ms ease-out 350ms both;
+}
+
+.top-price-enter {
+  animation: topPriceEnter 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 450ms both;
+}
