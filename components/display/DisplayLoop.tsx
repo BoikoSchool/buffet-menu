@@ -8,6 +8,7 @@ import type { DisplayData, SlideGroup } from "@/types";
 
 const POLL_INTERVAL = 30_000;
 const LS_CACHE_KEY = "buffet_display_cache";
+const CATEGORY_SLIDE_OFFSET = 120; // px — зменшити до 40-60 якщо в'їзд смикається на TV
 
 function chunkArray<T>(arr: T[], size: number): T[][] {
   const chunks: T[][] = [];
@@ -53,8 +54,9 @@ export function DisplayLoop() {
   const [data, setData] = useState<DisplayData | null>(null);
   const [slides, setSlides] = useState<SlideDescriptor[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [visible, setVisible] = useState(true);
+  const [prevIndex, setPrevIndex] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchData = useCallback(async () => {
@@ -106,18 +108,24 @@ export function DisplayLoop() {
       currentSlide.type === "category"
         ? data.settings.categorySlideDuration * 1000
         : data.settings.topSlideDuration * 1000;
-    const fadeDuration = data.settings.fadeDuration;
+
+    // Тривалість exit-анімації: топ відходить 450ms, категорія гасне 400ms
+    const exitDuration = currentSlide.type === "top" ? 450 : 400;
 
     timerRef.current = setTimeout(() => {
-      setVisible(false);
-      setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % slides.length);
-        setVisible(true);
-      }, fadeDuration);
+      const nextIndex = (currentIndex + 1) % slides.length;
+      setPrevIndex(currentIndex);
+      setCurrentIndex(nextIndex);
+
+      // Прибираємо попередній слайд після завершення exit-анімації
+      exitTimerRef.current = setTimeout(() => {
+        setPrevIndex(null);
+      }, exitDuration + 50);
     }, duration);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
     };
   }, [currentIndex, slides, data]);
 
@@ -125,8 +133,17 @@ export function DisplayLoop() {
     return <DefaultSlide />;
   }
 
-  const fadeDuration = data.settings.fadeDuration;
   const currentSlide = slides[currentIndex];
+
+  const exitClass =
+    prevIndex !== null
+      ? slides[prevIndex].type === "top"
+        ? "slide-exit-top-to-left"
+        : "slide-exit-category-fade"
+      : "";
+
+  const entryClass =
+    currentSlide.type === "category" ? "slide-enter-category-from-right" : "";
 
   return (
     <div
@@ -135,20 +152,30 @@ export function DisplayLoop() {
         height: "calc(var(--vh, 1vh) * 100)" as string,
         overflow: "hidden",
         position: "relative",
-      }}
+        "--category-slide-offset": `${CATEGORY_SLIDE_OFFSET}px`,
+      } as React.CSSProperties}
     >
+      {/* Слайд що виходить — грає exit-анімацію під новим */}
+      {prevIndex !== null && (
+        <div className={exitClass} style={{ position: "absolute", inset: 0, zIndex: 1 }}>
+          {slides[prevIndex].type === "category" ? (
+            <CategorySlide group={slides[prevIndex].group} />
+          ) : (
+            <TopPositionSlide dishes={slides[prevIndex].dishes} />
+          )}
+        </div>
+      )}
+
+      {/* Слайд що входить — key форсує ремонт і перезапускає CSS-анімації */}
       <div
-        style={{
-          opacity: visible ? 1 : 0,
-          transition: `opacity ${fadeDuration}ms ease-in-out`,
-          position: "absolute",
-          inset: 0,
-        }}
+        key={currentIndex}
+        className={entryClass}
+        style={{ position: "absolute", inset: 0, zIndex: 2 }}
       >
         {currentSlide.type === "category" ? (
-          <CategorySlide key={currentIndex} group={currentSlide.group} />
+          <CategorySlide group={currentSlide.group} />
         ) : (
-          <TopPositionSlide key={currentIndex} dishes={currentSlide.dishes} />
+          <TopPositionSlide dishes={currentSlide.dishes} />
         )}
       </div>
     </div>

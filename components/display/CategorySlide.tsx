@@ -135,7 +135,6 @@ export function CategorySlide({ group }: CategorySlideProps) {
 
   return (
     <div
-      className="category-slide-enter"
       style={{
         width: "100vw",
         height: "100vh",

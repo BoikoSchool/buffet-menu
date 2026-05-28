@@ -49,13 +49,27 @@ body {
   font-family: "Bebas Neue", sans-serif;
 }
 
-/* ── Анімації появи слайдів /display ── */
+/* ── Анімації переходів /display (тільки transform + opacity → GPU) ── */
 
-@keyframes categorySlideEnter {
-  from { opacity: 0; transform: scale(0.96); }
-  to   { opacity: 1; transform: scale(1); }
+/* Категорія в'їжджає справа (Топ → Категорія) */
+@keyframes categorySlideInFromRight {
+  from { opacity: 0; transform: translateX(var(--category-slide-offset, 120px)); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
+/* Топ відходить вліво (Топ → Категорія) */
+@keyframes topSlideOutToLeft {
+  from { opacity: 1; transform: scale(1) translateX(0); }
+  to   { opacity: 0; transform: scale(0.95) translateX(-40px); }
+}
+
+/* Категорія просто згасає (Категорія → Топ) */
+@keyframes categorySlideOutFade {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* Топ-слайд: поелементна поява (стаггер) */
 @keyframes topPhotoEnter {
   from { opacity: 0; transform: scale(0.9); }
   to   { opacity: 1; transform: scale(1); }
@@ -66,16 +80,26 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* translate(-50%,-60%) — позиціювання цінника — включено в кейфрейм,
-   бо анімація перекриває inline transform */
+/* translate(-50%,-60%) — позиціювання цінника — включено в кейфрейм */
 @keyframes topPriceEnter {
   0%   { opacity: 0; transform: translate(-50%, -60%) scale(0); }
   70%  {             transform: translate(-50%, -60%) scale(1.1); }
   100% { opacity: 1; transform: translate(-50%, -60%) scale(1); }
 }
 
-.category-slide-enter {
-  animation: categorySlideEnter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+.slide-enter-category-from-right {
+  animation: categorySlideInFromRight 650ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
+}
+
+.slide-exit-top-to-left {
+  animation: topSlideOutToLeft 450ms ease-in forwards;
+  will-change: transform, opacity;
+}
+
+.slide-exit-category-fade {
+  animation: categorySlideOutFade 400ms ease-in forwards;
+  will-change: opacity;
 }
 
 .top-photo-enter {
