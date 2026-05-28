@@ -88,7 +88,10 @@ body {
 }
 
 .slide-enter-category-from-right {
-  animation: categorySlideInFromRight 650ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: categorySlideInFromRight
+    var(--category-duration, 950ms)
+    var(--category-easing, cubic-bezier(0.33, 1, 0.68, 1))
+    both;
   will-change: transform, opacity;
 }
 

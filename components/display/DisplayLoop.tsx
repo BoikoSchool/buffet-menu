@@ -8,7 +8,12 @@ import type { DisplayData, SlideGroup } from "@/types";
 
 const POLL_INTERVAL = 30_000;
 const LS_CACHE_KEY = "buffet_display_cache";
-const CATEGORY_SLIDE_OFFSET = 120; // px — зменшити до 40-60 якщо в'їзд смикається на TV
+const CATEGORY_SLIDE_OFFSET = 80;  // px — зменшити до 40-60 якщо смикається на TV
+const CATEGORY_DURATION     = 950; // ms — більше = плавніше
+const CATEGORY_EASING = "cubic-bezier(0.33, 1, 0.68, 1)"; // плавне гальмування
+// Альтернативи — розкоментуй для тесту:
+// const CATEGORY_EASING = "cubic-bezier(0.25, 0.1, 0.25, 1)"; // класичний ease
+// const CATEGORY_EASING = "cubic-bezier(0.45, 0, 0.55, 1)";   // м'який ease-in-out
 
 function chunkArray<T>(arr: T[], size: number): T[][] {
   const chunks: T[][] = [];
@@ -153,6 +158,8 @@ export function DisplayLoop() {
         overflow: "hidden",
         position: "relative",
         "--category-slide-offset": `${CATEGORY_SLIDE_OFFSET}px`,
+        "--category-duration": `${CATEGORY_DURATION}ms`,
+        "--category-easing": CATEGORY_EASING,
       } as React.CSSProperties}
     >
       {/* Слайд що виходить — грає exit-анімацію під новим */}
