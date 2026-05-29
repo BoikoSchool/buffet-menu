@@ -88,10 +88,14 @@ body {
 }
 
 .slide-enter-category-from-right {
-  animation: categorySlideInFromRight
-    var(--category-duration, 950ms)
-    var(--category-easing, cubic-bezier(0.33, 1, 0.68, 1))
-    both;
+  /* Окремі властивості — надійніше з CSS-змінними ніж shorthand */
+  animation-name: categorySlideInFromRight;
+  animation-duration: var(--category-duration, 950ms);
+  animation-timing-function: var(--category-easing, cubic-bezier(0.33, 1, 0.68, 1));
+  animation-fill-mode: both;
+  /* opacity:0 на класі — гарантує невидимість до першого кадру анімації.
+     Анімація перезапише це значення як тільки стартує. */
+  opacity: 0;
   will-change: transform, opacity;
 }
 
